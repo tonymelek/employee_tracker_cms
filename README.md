@@ -16,6 +16,9 @@ You will need to clone the project from GitHub and amend your credentials in the
 2. After all packages required have been successfully installed, type `npm start`
 ## Usage
 After running the program, Use CLI to answer the question prompted on the screen to access and modify the database as per your needs.
+* You will be prompted with some questions depending on your selection , for ease of use most of te questions are just a choice from drop-down menu and the results will appear in a table as shown in the images below.
+![First_Screen](./readme_images/first.jpg)
+![Second_Screen](./readme_images/second.jpg)
 ## Contributing
 Should you have any suggestion you are welcome to send a proposal and once approved you will be added as a collaborator to implement your proposal
 ## Tests
