@@ -255,9 +255,9 @@ async function RoleHandler() {
             break;
         case 'Remove Role':
             result = await asyncQuery('SELECT * FROM  role ')
-            roleR[0].choices = result.map(item => item.name)
+            roleR[0].choices = result.map(item => item.title)
             ans = await prompt(roleR)
-            await asyncQuery('DELETE from role where name=?', [ans.name])
+            await asyncQuery('DELETE from role where title=?', [ans.name])
             break;
         default:
             result = await asyncQuery('SELECT * FROM  role ')
