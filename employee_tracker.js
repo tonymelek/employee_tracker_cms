@@ -333,6 +333,8 @@ async function statsHandler() {
     deptR[0].choices = result.map(item => item.name)
     ans = await prompt(deptR)
     let dpt_id = (await asyncQuery(`SELECT id from department where name='${ans.name}'`))[0].id
-    console.log(`Budget of ${ans.name} department =${(await asyncQuery(`SELECT sum(b.salary) as sum from employee as a left join role as b on a.role_id=b.id where b.department_id=${dpt_id}`))[0].sum}`);
+    let sum = (await asyncQuery(`SELECT sum(b.salary) as sum FROM employee as a LEFT JOIN role as b on a.role_id=b.id  group by b.department_id  having b.department_id=${dpt_id}`))[0].sum
+    console.log(`Budget of ${ans.name} department =${sum}`);
+
     await question()
 }
