@@ -161,13 +161,13 @@ async function employeeHandler() {
                         break;
                     }
                 }
-                await asyncQuery(`INSERT INTO employee (first_name,last_name,role_id,is_manager,manager_id) values ('${res.first_name}','${res.last_name}',${r_id},${res.is_manager == 'Yes' ? true : false},${m_id})`)
+                await asyncQuery(`INSERT INTO employee (first_name,last_name,role_id,is_manager,manager_id) values (?,?,?,?,?)`, [res.first_name, res.last_name, r_id, res.is_manager == 'Yes' ? true : false, m_id])
                 break;
             case 'Remove Employee':
                 ans = await prompt(emp)
                 for (employee of emp_temp) {
                     if (employee.employee == ans.name) {
-                        await asyncQuery(`DELETE from employee where id='${employee.id}'`)
+                        await asyncQuery(`DELETE from employee where id=?`, [employee.id])
                         break;
                     }
                 }
@@ -183,8 +183,8 @@ async function employeeHandler() {
                 ans2 = await prompt(rolesQ)
                 for (employee of emp_temp) {
                     if (employee.employee == ans.name) {
-                        let temp_rol = (await asyncQuery(`SELECT id from role where title='${ans2.name}'`))[0].id
-                        await asyncQuery(`UPDATE employee set role_id=${temp_rol} where concat(first_name,' ',last_name)='${ans.name}' `)
+                        let temp_rol = (await asyncQuery(`SELECT id from role where title=?`, [ans2.name]))[0].id
+                        await asyncQuery(`UPDATE employee set role_id=? where concat(first_name,' ',last_name)=? `, [temp_rol, ans.name])
                         break;
                     }
                 }
@@ -195,8 +195,8 @@ async function employeeHandler() {
                 ans2 = await prompt(employee_details[3])
                 for (employee of emp_temp) {
                     if (employee.employee == ans.name) {
-                        let temp_mgr = (await asyncQuery(`SELECT id from employee where concat(first_name,' ',last_name)='${ans2.manager}'`))[0].id
-                        await asyncQuery(`UPDATE employee set manager_id=${temp_mgr} where concat(first_name,' ',last_name)='${ans.name}' `)
+                        let temp_mgr = (await asyncQuery(`SELECT id from employee where concat(first_name,' ',last_name)=?`, [ans2.manager]))[0].id
+                        await asyncQuery(`UPDATE employee set manager_id=? where concat(first_name,' ',last_name)=? `, [temp_mgr, ans.name])
                         break;
                     }
                 }
@@ -251,7 +251,7 @@ async function RoleHandler() {
             roleQ[2].choices = result.map(item => item.name)
             ans = await prompt(roleQ)
             const dept = (await asyncQuery('SELECT id from department where name=?', [ans.department]))[0].id
-            await asyncQuery(`INSERT INTO role (title,salary,department_id) values ('${ans.title}','${ans.salary}',${dept})`)
+            await asyncQuery(`INSERT INTO role (title,salary,department_id) values (?,?,?)`, [ans.title, ans.salary, dept])
             break;
         case 'Remove Role':
             result = await asyncQuery('SELECT * FROM  role ')
@@ -267,9 +267,9 @@ async function RoleHandler() {
             let result2 = await asyncQuery('SELECT * FROM  department ')
             roleQ[2].choices = result2.map(item => item.name)
             let ans2 = await prompt(roleQ)
-            let temp_id = (await asyncQuery(`SELECT id from role where title='${ans.name}'`))[0].id
+            let temp_id = (await asyncQuery(`SELECT id from role where title=?`, [ans.name]))[0].id
             let dept2 = (await asyncQuery('SELECT id from department where name=?', [ans2.department]))[0].id
-            await asyncQuery(`UPDATE role set title='${ans2.title}',salary=${ans2.salary},department_id=${dept2} where id=${temp_id}`)
+            await asyncQuery(`UPDATE role set title=?,salary=?,department_id=? where id=?`, [ans2.title, ans2.salary, dept2, temp_id])
             break;
     }
     await question()
@@ -317,7 +317,7 @@ const DeptHandler = async function () {
             result = await asyncQuery('SELECT id FROM  department where name=?', [ans.name])
             ans = await prompt(deptQ)
             console.log(result, result[0].id, ans.name);
-            await asyncQuery(`UPDATE department SET name='${ans.name}' where id=${result[0].id}`)
+            await asyncQuery(`UPDATE department SET name=? where id=?`, [ans.name, result[0].id])
             break;
     }
     await question()
@@ -332,8 +332,8 @@ async function statsHandler() {
     let result = await asyncQuery('SELECT * FROM  department ')
     deptR[0].choices = result.map(item => item.name)
     ans = await prompt(deptR)
-    let dpt_id = (await asyncQuery(`SELECT id from department where name='${ans.name}'`))[0].id
-    let sum = (await asyncQuery(`SELECT sum(b.salary) as sum FROM employee as a LEFT JOIN role as b on a.role_id=b.id  group by b.department_id  having b.department_id=${dpt_id}`))[0].sum
+    let dpt_id = (await asyncQuery(`SELECT id from department where name=?`, [ans.name]))[0].id
+    let sum = (await asyncQuery(`SELECT sum(b.salary) as sum FROM employee as a LEFT JOIN role as b on a.role_id=b.id  group by b.department_id  having b.department_id=?`, [dpt_id]))[0].sum
     console.log(`Budget of ${ans.name} department =${sum}`);
 
     await question()
