@@ -5,6 +5,6 @@ const connection = createConnection({
     port: 3306,// Your port; if not 3306
     user: "admin",// Your username
     password: "admin",// Your password
-    database: "emplyoyee_tracker_db"
+    database: "employee_tracker_db"
 });
 module.exports = connection
